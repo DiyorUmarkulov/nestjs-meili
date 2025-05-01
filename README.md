@@ -168,4 +168,4 @@ MIT
 
 ---
 
-> Made with ❤️ by [your-org]
+> Made with ❤️ by Diyor Umarkulov
