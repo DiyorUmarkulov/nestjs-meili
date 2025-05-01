@@ -1,2 +1,23 @@
-node_modules
+# Node.js
+node_modules/
+dist/
+*.log
+
+# TypeScript
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# NPM files
+package-lock.json
 pnpm-lock.yaml
+
+# Git files
+.git/
+.gitignore

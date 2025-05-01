@@ -13,10 +13,13 @@
     "scripts": {
         "build": "rimraf dist && tsc",
         "watch": "tsc -w",
+        "clean": "rimraf dist node_modules",
+        "install": "pnpm install",
         "prepublishOnly": "npm run build"
     },
     "dependencies": {
-        "meilisearch": "0.50.0"
+        "meilisearch": "^0.50.0",
+        "rimraf": "^6.0.1"
     },
     "peerDependencies": {
         "@nestjs/common": "^9.0.0 || ^10.0.0",

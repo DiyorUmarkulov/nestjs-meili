@@ -1,0 +1,12 @@
+node_modules
+dist
+*.log
+*.md
+*.ts
+.git
+.gitignore
+README.md
+tsconfig.json
+tsconfig.build.json
+*.test.ts
+*.spec.ts
