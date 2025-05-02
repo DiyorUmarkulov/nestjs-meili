@@ -1,11 +1,33 @@
-import { Module, Global } from "@nestjs/common";
-import { MeiliModule } from "./moduleFactory";
+import { Module, DynamicModule } from "@nestjs/common";
+import { MeiliClient } from "../client";
+import { MeiliUtils } from "../utils";
+import { Reflector } from "@nestjs/core";
 
-@Global()
-@Module({
-  imports: [MeiliModule],
-  exports: [MeiliModule],
-})
-export class MeiliSearchModule {}
+const utils = new MeiliUtils(new Reflector());
 
-export * from "./moduleFactory";
+@Module({})
+export class MeiliModule {
+  static forRoot(options: { host: string; apiKey: string }): DynamicModule {
+    return {
+      module: MeiliModule,
+      providers: [
+        {
+          provide: MeiliClient,
+          useValue: new MeiliClient(options.host, options.apiKey),
+        },
+      ],
+      exports: [MeiliClient],
+    };
+  }
+
+  static async forFeature(models: Function[]): Promise<DynamicModule> {
+    const indexSetupPromises = models.map((index) => utils.setupIndex(index));
+
+    await Promise.all(indexSetupPromises);
+
+    return {
+      module: MeiliModule,
+      imports: [],
+    };
+  }
+}
