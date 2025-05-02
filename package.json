@@ -1,6 +1,6 @@
 {
   "name": "nestjs-meili",
-  "version": "0.1.10",
+  "version": "1.0.0",
   "main": "src/index.js",
   "types": "src/index.d.ts",
   "exports": {
