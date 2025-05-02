@@ -1,46 +1,83 @@
-# 🚀 nestjs-meili
+# 🔍 nestjs-meili
 
-> **Schema-first** Meilisearch integration for [NestJS](https://nestjs.com/) using declarative decorators
-> 🔧 Inspired by `@nestjs/mongoose`, optimized for full **TypeScript support** and developer experience
+Seamless and declarative integration of [MeiliSearch](https://www.meilisearch.com/) into [NestJS](https://nestjs.com/).
+Use decorators to configure indexes and inject `MeiliSearch` with type safety and zero boilerplate.
 
 ---
 
-## 🔥 Features
+## ✨ Features
 
-- ✅ `@MeiliIndex()` — define Meilisearch indexes declaratively
-- ✅ Attribute decorators: `@Searchable()`, `@Filterable()`, `@Sortable()`, and more
-- ✅ Automatic index settings sync on application startup
-- ✅ Fully typed models and index configuration
-- ✅ Seamless integration with NestJS Dependency Injection
-- ✅ Lightweight, modular, and framework-native
+- 🧠 **Decorator-driven** index configuration
+- ⚡ **Modular** design with `forFeature()` per entity
+- 🧩 **Typed injection** of indexes using class reference
+- 🔧 **Sync and async** initialization (e.g. with `ConfigModule`)
+- 🧪 Built-in **testing** support
+- 🚫 No global registry — each module owns its own setup
 
 ---
 
 ## 📦 Installation
 
 ```bash
-npm install nestjs-meili
-# or
-yarn add nestjs-meili
+yarn add nestjs-meili meilisearch reflect-metadata
+```
+
+Update `tsconfig.json`:
+
+```json
+{
+  "experimentalDecorators": true,
+  "emitDecoratorMetadata": true
+}
 ```
 
 ---
 
-## ⚙️ Quick Start
+## 🚀 Quick Start
 
-### 1. Import the Module
+### 1. Define a model
 
 ```ts
-// app.module.ts
-import { Module } from "@nestjs/common";
-import { MeiliModule } from "nestjs-meili";
+@MeiliIndex("books")
+@RankingRules(["words", "typo"])
+@StopWords(["the", "a"])
+@Synonyms({ hp: ["harry potter"] })
+@Pagination(1000)
+@Faceting(50)
+export class Book {
+  @PrimaryKey()
+  id: string;
 
+  @Searchable()
+  title: string;
+
+  @Filterable()
+  genre: string;
+
+  @Sortable()
+  publishedAt: string;
+
+  @Displayed()
+  title: string;
+
+  @Displayed()
+  genre: string;
+
+  @Distinct()
+  isbn: string;
+}
+```
+
+### 2. Register module
+
+```ts
 @Module({
   imports: [
     MeiliModule.forRoot({
       host: "http://localhost:7700",
-      apiKey: "masterKey", // optional
+      apiKey: "your_meili_api_key",
     }),
+    MeiliModule.forFeature([Book]),
   ],
 })
 export class AppModule {}
@@ -48,116 +85,115 @@ export class AppModule {}
 
 ---
 
-### 2. Define an Index with Decorators
+## 🧰 Inject and use
 
 ```ts
-// movie.index.ts
-import {
-  MeiliIndex,
-  Searchable,
-  Filterable,
-  Sortable,
-  Displayed,
-  Distinct,
-} from "nestjs-meili";
-
-@MeiliIndex("movies")
-export class Movie {
-  @Searchable()
-  @Displayed()
-  title: string;
-
-  @Searchable()
-  @Displayed()
-  description: string;
-
-  @Filterable()
-  @Displayed()
-  genre: string;
-
-  @Sortable()
-  @Displayed()
-  releaseDate: Date;
-
-  @Distinct()
-  @Displayed()
-  id: string;
-}
-```
-
----
-
-### 3. Sync Index Settings
-
-```ts
-// main.ts
-import { setupIndex } from "nestjs-meili";
-import { Movie } from "./movie.index";
-
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-
-  // Sync index settings on startup
-  await setupIndex(Movie);
-
-  await app.listen(3000);
-}
-bootstrap();
-```
-
----
-
-## 💡 Injecting Index into Services
-
-```ts
-import { Injectable } from "@nestjs/common";
-import { InjectMeiliIndex } from "nestjs-meili";
-import { MeiliSearchIndex } from "meilisearch";
-import { Movie } from "./movie.index";
-
 @Injectable()
-export class MovieService {
+export class BookService {
   constructor(
-    @InjectMeiliIndex(Movie)
-    private readonly movieIndex: MeiliSearchIndex<Movie>
+    @InjectMeiliIndex(Book) private readonly bookIndex: Index<Book>
   ) {}
 
-  async search(term: string) {
-    return this.movieIndex.search(term);
+  searchBooks(q: string) {
+    return this.bookIndex.search(q);
   }
 }
 ```
 
 ---
 
-## 🧰 Utilities
+## ⚙️ Async Configuration
 
-- `setupIndex(modelClass)` — Applies index settings based on decorators
-- `getMeiliIndexMetadata(modelClass)` — Extracts index metadata and configuration
-- `InjectMeiliIndex(modelClass)` — Injects the Meilisearch index instance
-
----
-
-## 🛣 Roadmap
-
-- [ ] CLI: sync multiple indexes at once
-- [ ] Watch mode: auto-sync on code changes (dev only)
-- [ ] ORM hooks: optional integration with TypeORM, Prisma, Mongoose
-- [ ] Decorators: `@Displayed()`, `@RankingRule()`, `@Distinct()`, `@StopWords()`, `@Synonyms()`
-
----
-
-## 🤝 Contributing
-
-We welcome contributions — bug reports, feature ideas, or pull requests.
-Let’s make Meilisearch integration with NestJS effortless and powerful.
+```ts
+@Module({
+  imports: [
+    ConfigModule.forRoot(),
+    MeiliModule.forRootAsync({
+      useFactory: (config: ConfigService) => ({
+        host: config.get("MEILI_HOST"),
+        apiKey: config.get("MEILI_API_KEY"),
+      }),
+      inject: [ConfigService],
+    }),
+    MeiliModule.forFeature([Book]),
+  ],
+})
+export class AppModule {}
+```
 
 ---
 
-## 📄 License
+## 🧠 Available Decorators
 
-MIT
+| Decorator              | Target   | Purpose                             |
+| ---------------------- | -------- | ----------------------------------- |
+| `@MeiliIndex(name)`    | Class    | Define MeiliSearch index name       |
+| `@PrimaryKey()`        | Property | Set primary key field               |
+| `@Searchable()`        | Property | Field is full-text searchable       |
+| `@Filterable()`        | Property | Field is usable in filters          |
+| `@Sortable()`          | Property | Field is sortable                   |
+| `@Displayed()`         | Property | Field is returned in search results |
+| `@Distinct()`          | Property | Used for deduplication              |
+| `@RankingRules([...])` | Class    | Custom ranking rules                |
+| `@StopWords([...])`    | Class    | Stop words for the index            |
+| `@Synonyms({...})`     | Class    | Synonyms map                        |
+| `@Pagination(n)`       | Class    | Sets `maxTotalHits`                 |
+| `@Faceting(n)`         | Class    | Sets `maxValuesPerFacet`            |
 
 ---
 
-> Made with ❤️ by [Diyor Umarkulov](https://github.com/diyorbek)
+## 🧪 Testing
+
+Replace `MeiliService` with a mock in unit tests:
+
+```ts
+{
+  provide: MeiliService,
+  useValue: {
+    getIndex: jest.fn().mockReturnValue(mockIndex),
+  },
+}
+```
+
+You can also inject and mock the index directly using `@InjectMeiliIndex(YourModel)`.
+
+---
+
+## 🧭 Architecture
+
+- `MeiliModule.forRoot(...)` initializes the Meili client once
+- `MeiliModule.forFeature([ModelA, ModelB])`:
+
+  - Registers each index based on decorators
+  - Applies index settings at startup
+  - Exposes injectable typed index via `@InjectMeiliIndex(Model)`
+
+No need for external config, global registries, or reflection hacks.
+
+---
+
+## ❓ Why use `nestjs-meili`?
+
+| Feature                     | Manual Setup | `nestjs-meili` |
+| --------------------------- | ------------ | -------------- |
+| Type-safe index injection   | ❌           | ✅             |
+| Centralized index config    | ❌           | ✅             |
+| Decorator-based schema      | ❌           | ✅             |
+| Built-in support for NestJS | ❌           | ✅             |
+| No global registry required | ❌           | ✅             |
+
+---
+
+## 🚧 Roadmap
+
+- [ ] Auto-sync schema changes (diff vs Meili state)
+- [ ] CLI to print index status & debug settings
+- [ ] Hooks: `@OnIndexSynced()`, `@OnIndexError()`
+- [ ] Optional `@Boost()` decorator
+- [ ] Automatic deletion/reindex hooks
+
+---
+
+## 📜 License
+
+MIT © 2025
