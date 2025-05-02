@@ -27,7 +27,7 @@ export class MeiliUtils {
     }
 
     try {
-      const meiliIndex = client.index(indexName);
+      const meiliIndex = await client.initIndex(indexName, primaryKey);
       const settings: Settings & IndexOptions = {
         primaryKey,
         searchableAttributes: this.collectProps(index, MEILI_INDEX_SEARCHABLE),
