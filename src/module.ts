@@ -73,7 +73,7 @@ export class MeiliModule {
       const indexName = this.getIndexName(model);
       return {
         provide: getMeiliIndexToken(indexName),
-        useFactory: (client: MeiliClient) => client.index(indexName),
+        useFactory: (client: MeiliClient) => client.initIndex(indexName),
         inject: [MeiliClient],
       };
     });

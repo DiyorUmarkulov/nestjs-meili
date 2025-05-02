@@ -6,6 +6,8 @@
     "lib": ["ES2017", "DOM"],
     "rootDir": "./src",
     "baseUrl": "./src",
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "useUnknownInCatchVariables": false,
+    "noImplicitAny": false
   }
 }

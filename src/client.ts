@@ -10,12 +10,24 @@ export class MeiliClient {
 
     this.client = new MeiliSearch({ host, apiKey });
   }
-
-  public index(name: string) {
+  public async initIndex(name: string, primaryKey?: string) {
     if (!this.client) {
       throw new Error("Client is not initialized yet.");
     }
 
-    return this.client.index(name);
+    let index = this.client.index(name);
+
+    try {
+      await index.getStats();
+    } catch (error) {
+      if (error.message.includes("Index not found")) {
+        await this.client.createIndex(name, { primaryKey });
+        index = this.client.index(name);
+      } else {
+        throw new Error(`Error initializing index: ${error.message}`);
+      }
+    }
+
+    return index;
   }
 }
