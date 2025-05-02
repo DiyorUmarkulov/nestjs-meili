@@ -4,6 +4,7 @@ import {
   Provider,
   Global,
   ModuleMetadata,
+  Type,
 } from "@nestjs/common";
 import { MeiliClient } from "./client";
 import { MeiliUtils } from "./utils";
@@ -14,15 +15,13 @@ export interface MeiliModuleOptions {
   apiKey: string;
 }
 
-export type MeiliModuleAsyncOptions<
-  TServices extends Function,
-  TModules extends Function
-> = Pick<ModuleMetadata, "imports"> & {
+export interface MeiliModuleAsyncOptions
+  extends Pick<ModuleMetadata, "imports"> {
   useFactory: (
-    ...args: TServices[]
+    ...args: any[]
   ) => Promise<MeiliModuleOptions> | MeiliModuleOptions;
-  inject?: TModules[];
-};
+  inject?: any[];
+}
 
 @Global()
 @Module({})
@@ -40,12 +39,10 @@ export class MeiliModule {
     };
   }
 
-  static forRootAsync<TServices extends Function, TModules extends Function>(
-    options: MeiliModuleAsyncOptions<TServices, TModules>
-  ): DynamicModule {
+  static forRootAsync(options: MeiliModuleAsyncOptions): DynamicModule {
     const clientProvider: Provider = {
       provide: MeiliClient,
-      useFactory: async (...args: TServices[]) => {
+      useFactory: async (...args: any[]) => {
         const config = await options.useFactory(...args);
         return new MeiliClient(config.host, config.apiKey);
       },
@@ -66,7 +63,6 @@ export class MeiliModule {
 
     return {
       module: MeiliModule,
-      imports: [],
     };
   }
 }
