@@ -12,7 +12,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rm -rf node_modules src/*.js src/*.d.ts src/**/*.js src/**/*.d.ts",
+    "clean": "rm -rf src/*.js src/*.d.ts src/**/*.js src/**/*.d.ts",
     "install": "pnpm install",
     "prepublishOnly": "npm run build"
   },

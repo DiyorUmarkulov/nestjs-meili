@@ -2,10 +2,17 @@ import { MeiliClient } from "./client";
 import { Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import {
-  MEILI_INDEX_FILTERABLE_WATERMARK,
-  MEILI_INDEX_SEARCHABLE_WATERMARK,
-  MEILI_INDEX_SORTABLE_WATERMARK,
+  MEILI_INDEX_RANKING_RULES,
+  MEILI_INDEX_STOP_WORDS,
+  MEILI_INDEX_SYNONYMS,
+  MEILI_INDEX_DISTINCT,
+  MEILI_INDEX_PAGINATION,
+  MEILI_INDEX_FACETING,
+  MEILI_INDEX_DISPLAYED,
   MEILI_INDEX_WATERMARK,
+  MEILI_INDEX_SEARCHABLE_WATERMARK,
+  MEILI_INDEX_FILTERABLE_WATERMARK,
+  MEILI_INDEX_SORTABLE_WATERMARK,
 } from "./watermarks";
 
 @Injectable()
@@ -17,33 +24,46 @@ export class MeiliUtils {
       MEILI_INDEX_WATERMARK,
       modelClass
     );
-    const searchable = this.reflector.get(
-      MEILI_INDEX_SEARCHABLE_WATERMARK,
-      modelClass
-    );
-    const filterable = this.reflector.get(
-      MEILI_INDEX_FILTERABLE_WATERMARK,
-      modelClass
-    );
-    const sortable = this.reflector.get(
-      MEILI_INDEX_SORTABLE_WATERMARK,
-      modelClass
-    );
-
     const meiliIndex = MeiliClient.prototype.index(indexName);
 
     const settings: any = {};
 
-    if (searchable) {
-      settings.searchableAttributes = searchable;
-    }
-    if (filterable) {
-      settings.filterableAttributes = filterable;
-    }
-    if (sortable) {
-      settings.sortableAttributes = sortable;
-    }
+    settings.searchableAttributes = this.collectProps(
+      modelClass,
+      MEILI_INDEX_SEARCHABLE_WATERMARK
+    );
+    settings.filterableAttributes = this.collectProps(
+      modelClass,
+      MEILI_INDEX_FILTERABLE_WATERMARK
+    );
+    settings.sortableAttributes = this.collectProps(
+      modelClass,
+      MEILI_INDEX_SORTABLE_WATERMARK
+    );
+
+    const ranking = this.reflector.get(MEILI_INDEX_RANKING_RULES, modelClass);
+    const stopWords = this.reflector.get(MEILI_INDEX_STOP_WORDS, modelClass);
+    const synonyms = this.reflector.get(MEILI_INDEX_SYNONYMS, modelClass);
+    const distinct = this.reflector.get(MEILI_INDEX_DISTINCT, modelClass);
+    const pagination = this.reflector.get(MEILI_INDEX_PAGINATION, modelClass);
+    const faceting = this.reflector.get(MEILI_INDEX_FACETING, modelClass);
+    const displayed = this.reflector.get(MEILI_INDEX_DISPLAYED, modelClass);
+
+    if (ranking) settings.rankingRules = ranking;
+    if (stopWords) settings.stopWords = stopWords;
+    if (synonyms) settings.synonyms = synonyms;
+    if (displayed?.length) settings.displayedAttributes = displayed;
+    if (distinct) settings.distinctAttribute = distinct;
+    if (pagination) settings.pagination = { maxTotalHits: pagination };
+    if (faceting) settings.faceting = { maxValuesPerFacet: faceting };
 
     await meiliIndex.updateSettings(settings);
+  }
+
+  private collectProps(modelClass: any, watermark: string): string[] {
+    const prototype = modelClass.prototype;
+    return Object.getOwnPropertyNames(prototype).filter((key) =>
+      Reflect.getMetadata(watermark, prototype, key)
+    );
   }
 }
