@@ -1,7 +1,7 @@
-export const MEILI_INDEX_WATERMARK = "meili_index";
-export const MEILI_INDEX_SEARCHABLE_WATERMARK = "meili_index_searchable";
-export const MEILI_INDEX_FILTERABLE_WATERMARK = "meili_index_filterable";
-export const MEILI_INDEX_SORTABLE_WATERMARK = "meili_index_sortable";
+export const MEILI_INDEX = "meili_index";
+export const MEILI_INDEX_SEARCHABLE = "meili_index_searchable";
+export const MEILI_INDEX_FILTERABLE = "meili_index_filterable";
+export const MEILI_INDEX_SORTABLE = "meili_index_sortable";
 export const MEILI_INDEX_RANKING_RULES = "meili_index_ranking_rules";
 export const MEILI_INDEX_STOP_WORDS = "meili_index_stop_words";
 export const MEILI_INDEX_SYNONYMS = "meili_index_synonyms";
@@ -9,3 +9,4 @@ export const MEILI_INDEX_DISTINCT = "meili_index_distinct";
 export const MEILI_INDEX_PAGINATION = "meili_index_pagination";
 export const MEILI_INDEX_FACETING = "meili_index_faceting";
 export const MEILI_INDEX_DISPLAYED = "meili_index_displayed";
+export const MEILI_PRIMARY_KEY = "meili_primary_key";

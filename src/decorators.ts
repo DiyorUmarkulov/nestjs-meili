@@ -1,9 +1,9 @@
 import "reflect-metadata";
 import {
-  MEILI_INDEX_FILTERABLE_WATERMARK,
-  MEILI_INDEX_SEARCHABLE_WATERMARK,
-  MEILI_INDEX_SORTABLE_WATERMARK,
-  MEILI_INDEX_WATERMARK,
+  MEILI_INDEX_FILTERABLE,
+  MEILI_INDEX_SEARCHABLE,
+  MEILI_INDEX_SORTABLE,
+  MEILI_INDEX,
   MEILI_INDEX_DISPLAYED,
   MEILI_INDEX_DISTINCT,
   MEILI_INDEX_FACETING,
@@ -11,44 +11,30 @@ import {
   MEILI_INDEX_RANKING_RULES,
   MEILI_INDEX_STOP_WORDS,
   MEILI_INDEX_SYNONYMS,
+  MEILI_PRIMARY_KEY,
 } from "./watermarks";
 
 export function MeiliIndex(index: string): ClassDecorator {
   return (target) => {
-    Reflect.defineMetadata(MEILI_INDEX_WATERMARK, index, target);
+    Reflect.defineMetadata(MEILI_INDEX, index, target);
   };
 }
 
 export function Searchable(): PropertyDecorator {
   return (target, propertyKey) => {
-    Reflect.defineMetadata(
-      MEILI_INDEX_SEARCHABLE_WATERMARK,
-      true,
-      target,
-      propertyKey
-    );
+    Reflect.defineMetadata(MEILI_INDEX_SEARCHABLE, true, target, propertyKey);
   };
 }
 
 export function Filterable(): PropertyDecorator {
   return (target, propertyKey) => {
-    Reflect.defineMetadata(
-      MEILI_INDEX_FILTERABLE_WATERMARK,
-      true,
-      target,
-      propertyKey
-    );
+    Reflect.defineMetadata(MEILI_INDEX_FILTERABLE, true, target, propertyKey);
   };
 }
 
 export function Sortable(): PropertyDecorator {
   return (target, propertyKey) => {
-    Reflect.defineMetadata(
-      MEILI_INDEX_SORTABLE_WATERMARK,
-      true,
-      target,
-      propertyKey
-    );
+    Reflect.defineMetadata(MEILI_INDEX_SORTABLE, true, target, propertyKey);
   };
 }
 
@@ -98,6 +84,16 @@ export function Distinct(): PropertyDecorator {
   return (target, propertyKey) => {
     Reflect.defineMetadata(
       MEILI_INDEX_DISTINCT,
+      propertyKey.toString(),
+      target.constructor
+    );
+  };
+}
+
+export function PrimaryKey(): PropertyDecorator {
+  return (target, propertyKey) => {
+    Reflect.defineMetadata(
+      MEILI_PRIMARY_KEY,
       propertyKey.toString(),
       target.constructor
     );

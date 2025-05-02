@@ -13,8 +13,9 @@ export class MeiliClient {
 
   public index(name: string) {
     if (!this.client) {
-      throw new Error("Client is not initialized.");
+      throw new Error("Client is not initialized yet.");
     }
+
     return this.client.index(name);
   }
 }
