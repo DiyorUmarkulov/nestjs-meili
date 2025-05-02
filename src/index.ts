@@ -1,9 +1,4 @@
-import { Module, Global } from "@nestjs/common";
-import { MeiliModule } from "./module";
-
-@Global()
-@Module({
-  imports: [MeiliModule],
-  exports: [MeiliModule],
-})
-export class MeiliSearchModule {}
+export * from "./client";
+export * from "./decorators";
+export * from "./module";
+export * from "./utils";
