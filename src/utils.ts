@@ -19,13 +19,16 @@ import {
 export class MeiliUtils {
   constructor(private readonly reflector: Reflector) {}
 
-  async setupIndex(modelClass: any) {
+  async setupIndex(modelClass: any): Promise<void> {
     const indexName = this.reflector.get<string>(
       MEILI_INDEX_WATERMARK,
       modelClass
     );
-    const meiliIndex = MeiliClient.prototype.index(indexName);
+    if (!indexName) {
+      throw new Error(`Index name for ${modelClass.name} not found.`);
+    }
 
+    const meiliIndex = MeiliClient.prototype.index(indexName);
     const settings: any = {};
 
     settings.searchableAttributes = this.collectProps(
@@ -57,7 +60,13 @@ export class MeiliUtils {
     if (pagination) settings.pagination = { maxTotalHits: pagination };
     if (faceting) settings.faceting = { maxValuesPerFacet: faceting };
 
-    await meiliIndex.updateSettings(settings);
+    try {
+      await meiliIndex.updateSettings(settings);
+    } catch (error) {
+      throw new Error(
+        `Failed to update settings for index ${indexName}: ${error.message}`
+      );
+    }
   }
 
   private collectProps(modelClass: any, watermark: string): string[] {
