@@ -7,3 +7,5 @@ import { MeiliModule } from "./moduleFactory";
   exports: [MeiliModule],
 })
 export class MeiliSearchModule {}
+
+export * from "./index";
