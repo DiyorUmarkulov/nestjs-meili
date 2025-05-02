@@ -37,8 +37,6 @@ export class MeiliUtils {
       this.addOptionalSettings(index, settings);
 
       await meiliIndex.updateSettings(settings);
-
-      console.log(`Meili index for ${index.name} setup complete.`);
     } catch (error) {
       console.error(`Failed to setup Meili index for ${index.name}:`, error);
     }
