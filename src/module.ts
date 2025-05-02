@@ -14,13 +14,15 @@ export interface MeiliModuleOptions {
   apiKey: string;
 }
 
-export interface MeiliModuleAsyncOptions
-  extends Pick<ModuleMetadata, "imports"> {
+export type MeiliModuleAsyncOptions<
+  TServices extends Function,
+  TModules extends Function
+> = Pick<ModuleMetadata, "imports"> & {
   useFactory: (
-    ...args: any[]
+    ...args: TServices[]
   ) => Promise<MeiliModuleOptions> | MeiliModuleOptions;
-  inject?: any[];
-}
+  inject?: TModules[];
+};
 
 @Global()
 @Module({})
@@ -38,12 +40,12 @@ export class MeiliModule {
     };
   }
 
-  static forRootAsync<T extends Function>(
-    options: MeiliModuleAsyncOptions
+  static forRootAsync<TServices extends Function, TModules extends Function>(
+    options: MeiliModuleAsyncOptions<TServices, TModules>
   ): DynamicModule {
     const clientProvider: Provider = {
       provide: MeiliClient,
-      useFactory: async (...args: T[]) => {
+      useFactory: async (...args: TServices[]) => {
         const config = await options.useFactory(...args);
         return new MeiliClient(config.host, config.apiKey);
       },
