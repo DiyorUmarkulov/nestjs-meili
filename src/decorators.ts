@@ -1,4 +1,4 @@
-import { SetMetadata } from "@nestjs/common";
+import "reflect-metadata";
 import {
   MEILI_INDEX_FILTERABLE_WATERMARK,
   MEILI_INDEX_SEARCHABLE_WATERMARK,
@@ -6,13 +6,41 @@ import {
   MEILI_INDEX_WATERMARK,
 } from "./watermarks";
 
-export const MeiliIndex = (index: string) =>
-  SetMetadata(MEILI_INDEX_WATERMARK, index);
+export function MeiliIndex(index: string): ClassDecorator {
+  return (target) => {
+    Reflect.defineMetadata(MEILI_INDEX_WATERMARK, index, target);
+  };
+}
 
-export const Searchable = () =>
-  SetMetadata(MEILI_INDEX_SEARCHABLE_WATERMARK, true);
+export function Searchable(): PropertyDecorator {
+  return (target, propertyKey) => {
+    Reflect.defineMetadata(
+      MEILI_INDEX_SEARCHABLE_WATERMARK,
+      true,
+      target,
+      propertyKey
+    );
+  };
+}
 
-export const Filterable = () =>
-  SetMetadata(MEILI_INDEX_FILTERABLE_WATERMARK, true);
+export function Filterable(): PropertyDecorator {
+  return (target, propertyKey) => {
+    Reflect.defineMetadata(
+      MEILI_INDEX_FILTERABLE_WATERMARK,
+      true,
+      target,
+      propertyKey
+    );
+  };
+}
 
-export const Sortable = () => SetMetadata(MEILI_INDEX_SORTABLE_WATERMARK, true);
+export function Sortable(): PropertyDecorator {
+  return (target, propertyKey) => {
+    Reflect.defineMetadata(
+      MEILI_INDEX_SORTABLE_WATERMARK,
+      true,
+      target,
+      propertyKey
+    );
+  };
+}
