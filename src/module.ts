@@ -38,10 +38,12 @@ export class MeiliModule {
     };
   }
 
-  static forRootAsync(options: MeiliModuleAsyncOptions): DynamicModule {
+  static forRootAsync<T extends Function>(
+    options: MeiliModuleAsyncOptions
+  ): DynamicModule {
     const clientProvider: Provider = {
       provide: MeiliClient,
-      useFactory: async (...args: any[]) => {
+      useFactory: async (...args: T[]) => {
         const config = await options.useFactory(...args);
         return new MeiliClient(config.host, config.apiKey);
       },
