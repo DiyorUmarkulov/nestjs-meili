@@ -20,7 +20,7 @@ export class MeiliClient {
     try {
       await index.getStats();
     } catch (error) {
-      if (error.message.includes("Index not found")) {
+      if (error.message.includes("has failed")) {
         await this.client.createIndex(name, { primaryKey });
         index = this.client.index(name);
       } else {
