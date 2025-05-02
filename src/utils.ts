@@ -64,7 +64,9 @@ export class MeiliUtils {
       await meiliIndex.updateSettings(settings);
     } catch (error) {
       throw new Error(
-        `Failed to update settings for index ${indexName}: ${error.message}`
+        `Failed to update settings for index ${indexName}: ${
+          error instanceof Error ? error.message : "unknown error"
+        }`
       );
     }
   }

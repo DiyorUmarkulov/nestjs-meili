@@ -1,13 +1,8 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "esnext",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+    "skipLibCheck": true,
+    "lib": ["ES2015", "DOM"]
+  }
 }

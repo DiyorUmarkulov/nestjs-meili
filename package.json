@@ -1,21 +1,26 @@
 {
   "name": "nestjs-meili",
   "version": "1.2.7",
-  "main": "src/index.js",
-  "types": "src/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
-      "import": "./src/index.js"
-    },
-    "./*": "./src/*"
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/esm/index.d.ts"
+    }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w",
-    "clean": "rm -rf src/*.js src/*.d.ts src/**/*.js src/**/*.d.ts",
-    "install": "pnpm install",
-    "prepublishOnly": "npm run build"
+    "clean": "rimraf dist",
+    "build": "pnpm clean && tsc -b tsconfig.build.json",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "watch": "tsc -b --watch tsconfig.build.json",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "meilisearch": "^0.50.0",
