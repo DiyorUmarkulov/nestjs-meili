@@ -8,4 +8,4 @@ import { MeiliModule } from "./moduleFactory";
 })
 export class MeiliSearchModule {}
 
-export * from "./index";
+export * from "./moduleFactory";
