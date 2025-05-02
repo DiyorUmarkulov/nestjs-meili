@@ -1,6 +1,5 @@
 import { MeiliClient } from "./client";
 import { Injectable, Type } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
 import {
   MEILI_PRIMARY_KEY,
   MEILI_INDEX_RANKING_RULES,
@@ -19,12 +18,10 @@ import { IndexOptions, Settings } from "meilisearch";
 
 @Injectable()
 export class MeiliUtils {
-  constructor(private readonly reflector: Reflector) {}
-
   async setupIndex(index: Type, client: MeiliClient): Promise<void> {
     const indexName = this.getIndexName(index);
 
-    const primaryKey = this.reflector.get(MEILI_PRIMARY_KEY, index);
+    const primaryKey = Reflect.getMetadata(MEILI_PRIMARY_KEY, index);
     if (!primaryKey) {
       throw new Error(`Primary key for model ${index.name} is not set`);
     }
@@ -49,7 +46,7 @@ export class MeiliUtils {
   }
 
   private getIndexName(index: Type): string {
-    const customName = this.reflector.get(MEILI_INDEX, index);
+    const customName = Reflect.getMetadata(MEILI_INDEX, index);
     return customName || index.name.toLowerCase();
   }
 
@@ -64,14 +61,14 @@ export class MeiliUtils {
     index: Type,
     settings: Settings & IndexOptions
   ): void {
-    const ranking = this.reflector.get(MEILI_INDEX_RANKING_RULES, index);
-    const stopWords = this.reflector.get(MEILI_INDEX_STOP_WORDS, index);
-    const synonyms = this.reflector.get(MEILI_INDEX_SYNONYMS, index);
-    const distinct = this.reflector.get(MEILI_INDEX_DISTINCT, index);
-    const pagination = this.reflector.get(MEILI_INDEX_PAGINATION, index);
-    const faceting = this.reflector.get(MEILI_INDEX_FACETING, index);
-    const displayed = this.reflector.get(MEILI_INDEX_DISPLAYED, index);
-    const primaryKey = this.reflector.get(MEILI_PRIMARY_KEY, index);
+    const ranking = Reflect.getMetadata(MEILI_INDEX_RANKING_RULES, index);
+    const stopWords = Reflect.getMetadata(MEILI_INDEX_STOP_WORDS, index);
+    const synonyms = Reflect.getMetadata(MEILI_INDEX_SYNONYMS, index);
+    const distinct = Reflect.getMetadata(MEILI_INDEX_DISTINCT, index);
+    const pagination = Reflect.getMetadata(MEILI_INDEX_PAGINATION, index);
+    const faceting = Reflect.getMetadata(MEILI_INDEX_FACETING, index);
+    const displayed = Reflect.getMetadata(MEILI_INDEX_DISPLAYED, index);
+    const primaryKey = Reflect.getMetadata(MEILI_PRIMARY_KEY, index);
 
     if (primaryKey) settings.primaryKey = primaryKey;
     if (ranking) settings.rankingRules = ranking;
