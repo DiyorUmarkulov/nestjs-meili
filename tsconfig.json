@@ -3,6 +3,8 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "lib": ["ES2015", "DOM"]
+    "lib": ["ES2015", "DOM"],
+    "rootDir": "./src",
+    "baseUrl": "./src"
   }
 }
