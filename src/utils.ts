@@ -29,7 +29,6 @@ export class MeiliUtils {
     try {
       const meiliIndex = await client.initIndex(indexName, primaryKey);
       const settings: Settings & IndexOptions = {
-        primaryKey,
         searchableAttributes: this.collectProps(index, MEILI_INDEX_SEARCHABLE),
         filterableAttributes: this.collectProps(index, MEILI_INDEX_FILTERABLE),
         sortableAttributes: this.collectProps(index, MEILI_INDEX_SORTABLE),
@@ -68,9 +67,7 @@ export class MeiliUtils {
     const pagination = Reflect.getMetadata(MEILI_INDEX_PAGINATION, index);
     const faceting = Reflect.getMetadata(MEILI_INDEX_FACETING, index);
     const displayed = Reflect.getMetadata(MEILI_INDEX_DISPLAYED, index);
-    const primaryKey = Reflect.getMetadata(MEILI_PRIMARY_KEY, index);
 
-    if (primaryKey) settings.primaryKey = primaryKey;
     if (ranking) settings.rankingRules = ranking;
     if (stopWords) settings.stopWords = stopWords;
     if (synonyms) settings.synonyms = synonyms;
