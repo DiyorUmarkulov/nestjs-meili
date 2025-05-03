@@ -22,19 +22,40 @@ export function MeiliIndex(index: string): ClassDecorator {
 
 export function Searchable(): PropertyDecorator {
   return (target, propertyKey) => {
-    Reflect.defineMetadata(MEILI_INDEX_SEARCHABLE, true, target, propertyKey);
+    const searchableProps =
+      Reflect.getMetadata(MEILI_INDEX_SEARCHABLE, target.constructor) || [];
+    searchableProps.push(propertyKey.toString());
+    Reflect.defineMetadata(
+      MEILI_INDEX_SEARCHABLE,
+      searchableProps,
+      target.constructor
+    );
   };
 }
 
 export function Filterable(): PropertyDecorator {
   return (target, propertyKey) => {
-    Reflect.defineMetadata(MEILI_INDEX_FILTERABLE, true, target, propertyKey);
+    const filterableProps =
+      Reflect.getMetadata(MEILI_INDEX_FILTERABLE, target.constructor) || [];
+    filterableProps.push(propertyKey.toString());
+    Reflect.defineMetadata(
+      MEILI_INDEX_FILTERABLE,
+      filterableProps,
+      target.constructor
+    );
   };
 }
 
 export function Sortable(): PropertyDecorator {
   return (target, propertyKey) => {
-    Reflect.defineMetadata(MEILI_INDEX_SORTABLE, true, target, propertyKey);
+    const sortableProps =
+      Reflect.getMetadata(MEILI_INDEX_SORTABLE, target.constructor) || [];
+    sortableProps.push(propertyKey.toString());
+    Reflect.defineMetadata(
+      MEILI_INDEX_SORTABLE,
+      sortableProps,
+      target.constructor
+    );
   };
 }
 

@@ -48,10 +48,7 @@ export class MeiliUtils {
   }
 
   private collectProps(index: Type, watermark: string): string[] {
-    const prototype = index.prototype;
-    return Object.getOwnPropertyNames(prototype).filter((key) =>
-      Reflect.getMetadata(watermark, prototype, key)
-    );
+    return Reflect.getMetadata(watermark, index) || [];
   }
 
   private addOptionalSettings(
