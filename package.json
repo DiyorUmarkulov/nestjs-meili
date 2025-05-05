@@ -4,6 +4,7 @@
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/cjs/types/index.d.ts",
+  "license": "MIT",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
