@@ -33,7 +33,7 @@ export class MeiliModule {
       providers: [
         {
           provide: MeiliClient,
-          useValue: new MeiliClient(options.host, options.apiKey),
+          useValue: new MeiliClient(options.host, options.apiKey).client,
         },
       ],
       exports: [MeiliClient],
@@ -45,7 +45,7 @@ export class MeiliModule {
       provide: MeiliClient,
       useFactory: async (...args: any[]) => {
         const config = await options.useFactory(...args);
-        return new MeiliClient(config.host, config.apiKey);
+        return new MeiliClient(config.host, config.apiKey).client;
       },
       inject: options.inject || [],
     };
