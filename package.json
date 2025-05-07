@@ -8,9 +8,9 @@
   "keywords": [
     "meilisearch",
     "nestjs",
-    "nestjs-meili",
     "nestjs-meilisearch",
-    "meili"
+    "meili",
+    "nest"
   ],
   "exports": {
     ".": {
