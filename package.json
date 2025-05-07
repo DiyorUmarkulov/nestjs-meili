@@ -5,6 +5,13 @@
   "module": "./dist/esm/index.js",
   "types": "./dist/cjs/types/index.d.ts",
   "license": "MIT",
+  "keywords": [
+    "meilisearch",
+    "nestjs",
+    "nestjs-meili",
+    "nestjs-meilisearch",
+    "meili"
+  ],
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
