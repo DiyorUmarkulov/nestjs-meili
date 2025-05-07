@@ -10,6 +10,7 @@ import { MeiliClient } from "./client";
 import { MeiliUtils } from "./utils";
 import { getMeiliIndexToken } from "./inject-meili";
 import { MEILI_INDEX } from "./watermarks";
+import { MeiliSearch } from "meilisearch";
 
 export interface MeiliModuleOptions {
   host: string;
@@ -28,24 +29,41 @@ export interface MeiliModuleAsyncOptions
 @Module({})
 export class MeiliModule {
   static forRoot(options: MeiliModuleOptions): DynamicModule {
+    const clientController = new MeiliClient(options.host, options.apiKey);
+
+    const clientControllerProvider: Provider = {
+      provide: MeiliClient,
+      useValue: clientController,
+    };
+
+    const clientProvider: Provider = {
+      provide: MeiliSearch,
+      useValue: clientController.client,
+    };
+
     return {
       module: MeiliModule,
-      providers: [
-        {
-          provide: MeiliClient,
-          useValue: new MeiliClient(options.host, options.apiKey).client,
-        },
-      ],
-      exports: [MeiliClient],
+      imports: [],
+      providers: [clientControllerProvider, clientProvider],
+      exports: [MeiliClient, clientProvider],
     };
   }
 
   static forRootAsync(options: MeiliModuleAsyncOptions): DynamicModule {
-    const clientProvider: Provider = {
+    const clientControllerProvider: Provider = {
       provide: MeiliClient,
       useFactory: async (...args: any[]) => {
         const config = await options.useFactory(...args);
-        return new MeiliClient(config.host, config.apiKey).client;
+        return new MeiliClient(config.host, config.apiKey);
+      },
+      inject: options.inject || [],
+    };
+
+    const clientProvider: Provider = {
+      provide: MeiliSearch,
+      useFactory: async (...args: any[]) => {
+        const config = await options.useFactory(...args);
+        return new MeiliSearch({ host: config.host, apiKey: config.apiKey });
       },
       inject: options.inject || [],
     };
@@ -53,8 +71,8 @@ export class MeiliModule {
     return {
       module: MeiliModule,
       imports: options.imports || [],
-      providers: [clientProvider],
-      exports: [MeiliClient],
+      providers: [clientControllerProvider, clientProvider],
+      exports: [MeiliClient, clientProvider],
     };
   }
 
